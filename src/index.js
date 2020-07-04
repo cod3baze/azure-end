@@ -1,20 +1,14 @@
+/* eslint-disable camelcase */
 require('dotenv').config({});
 
 const TelegramBot = require('node-telegram-bot-api');
-const path = require('path');
-const api = require('./services/api');
+const getRepoFromGit = require('./main');
 
 const token = process.env.TOKEN || 'ERROR_NO_TOKEN_PROVIDED';
 
 const bot = new TelegramBot(token, {
   polling: true,
 });
-
-async function getRepoFromGit(frame) {
-  const response = await api.get('/orgs/google');
-
-  return response.data;
-}
 
 // Matches "/echo [whatever]"
 bot.onText(/\/echo (.+)/, (msg, match) => {
@@ -53,8 +47,6 @@ bot.on('message', (msg) => {
       .map((str) => str.trim());
 
     if (digits.length === 2) {
-      bot.sendMessage(msg.chat.id, 'Carregando informações..');
-
       // dr.python: learn
       // dr.python: contrib
       // dr.python: community
@@ -64,7 +56,7 @@ bot.on('message', (msg) => {
       const [, lang] = langs;
 
       if (method.toLowerCase().includes('learn')) {
-        if (lang.toLowerCase() === 'python') {
+        if (lang.toLowerCase() === 'python' || lang.toLowerCase() === 'py') {
           bot.sendMessage(msg.chat.id, `Visão geral sobre Python:
           [LINK](https://www.w3schools.com/python/python_intro.asp)
           `, {
@@ -88,36 +80,49 @@ bot.on('message', (msg) => {
       }
       if (method.toLowerCase().includes('contrib')) {
         if (lang.toLowerCase() === 'python') {
-          bot.sendMessage(msg.chat.id, `Repositórios para contribuição sobre Python:
-          LISTA
-          `);
+          bot.sendMessage(msg.chat.id, 'Repositórios para contribuições sobre Python:');
+          getRepoFromGit('python').then((res) => {
+            bot.sendMessage(msg.chat.id, `${res}`, {
+              parse_mode: 'Markdown',
+            });
+          }).catch((err) => bot.sendMessage(err.message));
         }
         if (lang.toLowerCase() === 'javascript' || lang.toLowerCase() === 'js') {
-          bot.sendMessage(msg.chat.id, `Repositórios para contribuição sobre Javascript:
-          LISTA
-          `);
+          bot.sendMessage(msg.chat.id, 'Repositórios para contribuições sobre Javascript:');
+          getRepoFromGit('js').then((res) => {
+            bot.sendMessage(msg.chat.id, `${res}`, {
+              parse_mode: 'Markdown',
+            });
+          }).catch((err) => bot.sendMessage(err.message));
         }
         if (lang.toLowerCase() === 'java' || lang.toLowerCase() === 'jv') {
-          bot.sendMessage(msg.chat.id, `Repositórios para contribuição sobre Java:
-          LISTA
-          `);
+          bot.sendMessage(msg.chat.id, 'Repositórios para contribuições sobre Java:');
+          getRepoFromGit('java').then((res) => {
+            bot.sendMessage(msg.chat.id, `${res}`, {
+              parse_mode: 'Markdown',
+            });
+          }).catch((err) => bot.sendMessage(err.message));
         }
       }
       if (method.toLowerCase().includes('community')) {
         if (lang.toLowerCase() === 'python') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Python:
-          LISTA
+          [DYS](https://discord.com/channels/267624335836053506/267631170882240512)
+          [DYS](https://discord.com/channels/327254708534116352/330410763594498050)
+          [CODE](https://discord.com/channels/174075418410876928/184610906615840768)
           `);
         }
         if (lang.toLowerCase() === 'javascript' || lang.toLowerCase() === 'js') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Javascript:
-          LISTA
+          [ROCKET](https://discord.com/channels/705772178561564672/719367926175629373)
+          [JS-HUB](https://discord.com/channels/268970339948691456/385921610110074881)
+          [CODE](https://discord.com/channels/174075418410876928/184610906615840768)
           `);
         }
         if (lang.toLowerCase() === 'java' || lang.toLowerCase() === 'jv') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Java:
-          [JPF](https://www.javaprogrammingforums.com/)
-          [JPF](https://www.javaprogrammingforums.com/)
+          [VOXXED](https://beta.voxxeddays.com/#/)
+          [TECH](https://www.reddit.com/r/java/new/)
           [JPF](https://www.javaprogrammingforums.com/)
           `);
         }
@@ -126,12 +131,8 @@ bot.on('message', (msg) => {
   }
 
   if (msg.text.toString().toLowerCase().includes('dr.close')) {
-    bot.sendMessage(msg.chat.id, 'Flw!');
-  }
-
-  const photo = path.resolve(__dirname, '..', 'assets', 'stars.svg');
-  if (msg.text.toString().toLowerCase().includes('photo')) {
-    bot.sendPhoto(msg.chat.id, photo);
+    bot.sendMessage(msg.chat.id, 'Flw! ❤❣');
+    bot.closeWebHook();
   }
 });
 
