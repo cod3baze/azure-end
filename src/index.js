@@ -31,9 +31,26 @@ bot.on('message', (msg) => {
     if (digits.length === 1 && digits[0].toLowerCase() === 'doctor') {
       bot.sendMessage(msg.chat.id, `Eis oque o <strong>DR</strong> pode fazer:
         <code></code>
-        - Achar materiais de estudo para: <code> Python</code>, <code> JS</code>, <code> Java</code>.
-        - Achar repositórios para contribuições.
-        - Achar principais comunidades das linguagens acima.
+        1 Achar materiais de estudo para: <code> Python</code>, <code> JS</code>, <code> Java</code>.
+        2 Achar repositórios para contribuições.
+        3 Achar principais comunidades das linguagens acima.
+      `, {
+        parse_mode: 'HTML',
+      });
+    }
+  }
+
+  if (msg.text.toString().toLowerCase().includes('how')) {
+    const digits = msg.text
+      .toString()
+      .split(' ')
+      .map((str) => str.trim());
+
+    if (digits.length === 2 && digits[1].toLowerCase() === 'to') {
+      bot.sendMessage(msg.chat.id, `Digite:
+        1 <code>dr.python: learn</code>
+        2 <code>dr.java: contrib</code>
+        3 <code>dr.javascript: community</code>
       `, {
         parse_mode: 'HTML',
       });
@@ -79,7 +96,7 @@ bot.on('message', (msg) => {
         }
       }
       if (method.toLowerCase().includes('contrib')) {
-        if (lang.toLowerCase() === 'python') {
+        if (lang.toLowerCase() === 'python' || lang.toLowerCase() === 'py') {
           bot.sendMessage(msg.chat.id, 'Repositórios para contribuições sobre Python:');
           getRepoFromGit('python').then((res) => {
             bot.sendMessage(msg.chat.id, `${res}`, {
@@ -105,26 +122,32 @@ bot.on('message', (msg) => {
         }
       }
       if (method.toLowerCase().includes('community')) {
-        if (lang.toLowerCase() === 'python') {
+        if (lang.toLowerCase() === 'python' || lang.toLowerCase() === 'py') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Python:
           [DYS](https://discord.com/channels/267624335836053506/267631170882240512)
-          [DYS](https://discord.com/channels/327254708534116352/330410763594498050)
+          [CNL](https://discord.com/channels/327254708534116352/330410763594498050)
           [CODE](https://discord.com/channels/174075418410876928/184610906615840768)
-          `);
+          `, {
+            parse_mode: 'Markdown',
+          });
         }
         if (lang.toLowerCase() === 'javascript' || lang.toLowerCase() === 'js') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Javascript:
           [ROCKET](https://discord.com/channels/705772178561564672/719367926175629373)
           [JS-HUB](https://discord.com/channels/268970339948691456/385921610110074881)
           [CODE](https://discord.com/channels/174075418410876928/184610906615840768)
-          `);
+          `, {
+            parse_mode: 'Markdown',
+          });
         }
         if (lang.toLowerCase() === 'java' || lang.toLowerCase() === 'jv') {
           bot.sendMessage(msg.chat.id, `Principais comunidades sobre Java:
           [VOXXED](https://beta.voxxeddays.com/#/)
           [TECH](https://www.reddit.com/r/java/new/)
           [JPF](https://www.javaprogrammingforums.com/)
-          `);
+          `, {
+            parse_mode: 'Markdown',
+          });
         }
       }
     }
