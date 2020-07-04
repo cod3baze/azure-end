@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
     "dev": "nodemon ./src/index.js"
   },
   "keywords": [],
@@ -16,6 +17,9 @@
     "node-telegram-bot-api": "^0.50.0"
   },
   "devDependencies": {
+    "eslint": "^7.3.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "2.21.2",
     "nodemon": "^2.0.4"
   }
 }
